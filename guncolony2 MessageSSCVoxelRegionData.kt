@@ -5,7 +5,6 @@ import com.guncolony.common.networking.SCNetworkMessage
 import com.guncolony.common.networking.SSNetworkMessage
 import com.guncolony.common.voxel.CommonVoxelData
 import com.guncolony.util.*
-import com.soywiz.kds.BitSet
 
 /**
  * A message that is sent from the server to either a client or another server to update a 3D AABB region of blocks in
@@ -55,29 +54,29 @@ class MessageSSCVoxelRegionData(
         })
     }
 
-    override fun writeBits(bits: BitSet, position: MutableInt) {
-        bits.writeInt(position, voxelVolumeId)
-        bits.writeULong(position, anchorBlockPos.value)
-        bits.writeInt(position, data.sizeX)
-        bits.writeInt(position, data.sizeY)
-        bits.writeInt(position, data.sizeZ)
-        bits.writeByteArrayWithLengthLong(position, encoded)
+    override fun writeBytes(bytes: ByteArray, position: MutableInt) {
+        bytes.writeInt(position, voxelVolumeId)
+        bytes.writeULong(position, anchorBlockPos.value)
+        bytes.writeInt(position, data.sizeX)
+        bytes.writeInt(position, data.sizeY)
+        bytes.writeInt(position, data.sizeZ)
+        bytes.writeByteArrayWithLengthLong(position, encoded)
     }
 
-    override fun measureBits(): Int = 32 + 64 + 32 + 32 + 32 + encoded.size * 8
+    override fun measureBytes(): Int = 4 + 8 + 4 + 4 + 4 + (4 + encoded.size)
 
     companion object : NetworkMessageFactory<MessageSSCVoxelRegionData> {
         override val type = MessageSSCVoxelRegionData::class
 
-        override fun readBits(bits: BitSet, position: MutableInt) = MessageSSCVoxelRegionData(
-            bits.readInt(position),
-            BlockVec(bits.readLong(position)),
+        override fun readBytes(bytes: ByteArray, position: MutableInt) = MessageSSCVoxelRegionData(
+            bytes.readInt(position),
+            BlockVec(bytes.readLong(position)),
             run {
-                val x = bits.readInt(position)
-                val y = bits.readInt(position)
-                val z = bits.readInt(position)
+                val x = bytes.readInt(position)
+                val y = bytes.readInt(position)
+                val z = bytes.readInt(position)
                 val numBlocks = x * y * z
-                val array = snappyDecompress(bits.readByteArrayWithLengthLong(position))
+                val array = snappyDecompress(bytes.readByteArrayWithLengthLong(position))
                 CommonVoxelData(
                     x, y, z,
                     IntArray(numBlocks){i -> array.readInt(i*4)},

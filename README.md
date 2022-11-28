@@ -1,5 +1,5 @@
 # random-kotlin-code-samples
-An assortment of code samples from my Kotlin projects, meant to act as a portfolio. These samples are representative of the quality of my typical code. Because I expect these codebases to be used in production and improved upon over several years, I emphasize readability, documentation, and performance in my code style.
+An assortment of code samples from my Kotlin projects. These samples are representative of the quality of my typical code. Because I expect these codebases to be used in production and improved upon over several years, I emphasize readability, documentation, and performance in my code style.
 
 Projects covered by the portfolio:
 
